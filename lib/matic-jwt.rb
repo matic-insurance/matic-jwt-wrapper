@@ -1,4 +1,5 @@
 require 'active_support/time'
+require 'jwt'
 
 require 'matic-jwt/authenticator'
 require 'matic-jwt/generator'
