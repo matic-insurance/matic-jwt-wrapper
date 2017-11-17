@@ -10,10 +10,10 @@ RSpec.describe MaticJWT::Authenticator do
   let(:secret) { 'secret' }
 
   context 'without authorization header' do
-    let(:request) { double(headers: {}) }
+    let(:headers) { {} }
 
     it 'raises an error on initialization' do
-      expect { described_class.new(request) }.to raise_error(JWT::DecodeError, 'Authorization header is missing')
+      expect { described_class.new(headers) }.to raise_error(JWT::DecodeError, 'Authorization header is missing')
     end
   end
 
