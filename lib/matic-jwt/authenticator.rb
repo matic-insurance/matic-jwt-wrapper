@@ -1,5 +1,7 @@
 module MaticJWT
   class Authenticator
+    TOKEN_TYPE = 'Bearer: '.freeze
+
     def initialize(headers)
       @token = extract_token(headers)
     end
@@ -9,7 +11,7 @@ module MaticJWT
     end
 
     def authenticate_with_secret!(secret)
-      JWT.decode @token, secret, true, algorithm: ALGORITHM
+      JWT.decode(@token, secret, true, algorithm: ALGORITHM)
     end
 
     private
@@ -17,7 +19,7 @@ module MaticJWT
     def extract_token(headers)
       header = headers['Authorization']
       validate_header_presence!(header)
-      header.slice(8..-1)
+      header.slice(TOKEN_TYPE.length..-1)
     end
 
     def payload
