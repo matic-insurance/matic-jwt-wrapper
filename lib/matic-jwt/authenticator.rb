@@ -2,8 +2,8 @@ module MaticJWT
   class Authenticator
     TOKEN_TYPE = 'Bearer: '.freeze
 
-    def initialize(headers)
-      @token = extract_token(headers)
+    def initialize(header)
+      @token = extract_token(header)
     end
 
     def client_name
@@ -16,18 +16,18 @@ module MaticJWT
 
     private
 
-    def extract_token(headers)
-      header = headers['Authorization']
-      validate_header_presence!(header)
-      header.slice(TOKEN_TYPE.length..-1)
+    def extract_token(header)
+      token = header.slice(TOKEN_TYPE.length..-1)
+      validate_header_presence!(token)
+      token
     end
 
     def payload
       JWT.decode(@token, nil, false)
     end
 
-    def validate_header_presence!(header)
-      raise(JWT::DecodeError, 'Authorization header is missing') if header.nil?
+    def validate_header_presence!(token)
+      raise(JWT::DecodeError, 'Authorization token is incorrect') unless token&.present?
     end
   end
 end

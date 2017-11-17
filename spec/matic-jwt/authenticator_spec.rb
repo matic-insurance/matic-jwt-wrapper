@@ -1,19 +1,27 @@
 require 'spec_helper'
 
 RSpec.describe MaticJWT::Authenticator do
-  let(:instance) { described_class.new(headers) }
+  let(:instance) { described_class.new(header) }
 
-  let(:headers) { {'Authorization' => "Bearer: #{token}"} }
+  let(:header) { "Bearer: #{token}" }
   let(:token) { MaticJWT::Generator.new.token_for(client_name, secret) }
 
   let(:client_name) { 'servicing' }
   let(:secret) { 'secret' }
 
-  context 'without authorization header' do
-    let(:headers) { {} }
+  context 'with empty header' do
+    let(:header) { '' }
 
     it 'raises an error on initialization' do
-      expect { described_class.new(headers) }.to raise_error(JWT::DecodeError, 'Authorization header is missing')
+      expect { described_class.new(header) }.to raise_error(JWT::DecodeError, 'Authorization token is incorrect')
+    end
+  end
+
+  context 'with empty token' do
+    let(:header) { 'Bearer:' }
+
+    it 'raises an error on initialization' do
+      expect { described_class.new(header) }.to raise_error(JWT::DecodeError, 'Authorization token is incorrect')
     end
   end
 
