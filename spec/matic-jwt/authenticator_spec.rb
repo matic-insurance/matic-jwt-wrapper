@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 RSpec.describe MaticJWT::Authenticator do
-  let(:instance) { described_class.new(request) }
+  let(:instance) { described_class.new(headers) }
 
-  let(:request) { double(headers: {'Authorization' => "Bearer: #{token}"}) }
+  let(:headers) { {'Authorization' => "Bearer: #{token}"} }
   let(:token) { MaticJWT::Generator.new.token_for(client_name, secret) }
 
   let(:client_name) { 'servicing' }

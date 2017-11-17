@@ -1,7 +1,7 @@
 module MaticJWT
   class Authenticator
-    def initialize(request)
-      @token = extract_token(request)
+    def initialize(headers)
+      @token = extract_token(headers)
     end
 
     def client_name
@@ -14,8 +14,8 @@ module MaticJWT
 
     private
 
-    def extract_token(request)
-      header = request.headers['Authorization']
+    def extract_token(headers)
+      header = headers['Authorization']
       validate_header_presence!(header)
       header.slice(8..-1)
     end
