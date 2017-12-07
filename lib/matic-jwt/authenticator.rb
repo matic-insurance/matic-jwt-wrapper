@@ -1,6 +1,6 @@
 module MaticJWT
   class Authenticator
-    TOKEN_TYPE = 'Bearer: '.freeze
+    TOKEN_TYPE = 'Bearer '.freeze
 
     def initialize(header)
       @token = extract_token(header)
