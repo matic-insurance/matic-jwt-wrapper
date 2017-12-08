@@ -59,14 +59,6 @@ RSpec.describe MaticJWT::Authenticator do
       end
     end
 
-    context 'with incorrect overridden expiration' do
-      let(:token_generator) { MaticJWT::Generator.new(expiration: 1) }
-
-      it 'raise an error' do
-        expect { authenticate }.to raise_error(JWT::DecodeError, 'Incorrect type for expiration. Should be ActiveSupport::Duration')
-      end
-    end
-
     context 'with incorrect secret' do
       let(:decode_secret) { 'incorrect_secret' }
 
