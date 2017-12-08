@@ -8,4 +8,5 @@ require 'matic-jwt/version'
 module MaticJWT
   ALGORITHM = 'HS256'.freeze
   EXPIRATION = 1.minute
+  SCHEME = 'Bearer'.freeze
 end
