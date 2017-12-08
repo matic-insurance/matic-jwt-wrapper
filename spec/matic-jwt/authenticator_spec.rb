@@ -59,6 +59,24 @@ RSpec.describe MaticJWT::Authenticator do
       end
     end
 
+    context 'with header generated with #authentication_header_for' do
+      let(:header) { token_generator.authentication_header_for(client_name, secret) }
+
+      it 'works correctly' do
+        expect { authenticate }.not_to raise_error
+      end
+
+      context 'with custom token type' do
+        let(:token_type) { 'Basic' }
+        let(:instance) { described_class.new(header, token_type: token_type) }
+        let(:header) { token_generator.authentication_header_for(client_name, secret, token_type) }
+
+        it 'still works correctly' do
+          expect { authenticate }.not_to raise_error
+        end
+      end
+    end
+
     context 'with incorrect secret' do
       let(:decode_secret) { 'incorrect_secret' }
 
