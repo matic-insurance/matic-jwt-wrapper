@@ -2,8 +2,8 @@ module MaticJWT
   class Authenticator
     TOKEN_TYPE = 'Bearer'.freeze
 
-    def initialize(header, token_type: nil)
-      @custom_token_type = token_type
+    def initialize(header, token_type: TOKEN_TYPE)
+      @token_type = token_type
       @token = extract_token(header)
     end
 
@@ -18,7 +18,7 @@ module MaticJWT
     private
 
     def extract_token(header)
-      token = header.slice(token_type.length + 1..-1)
+      token = header.slice(@token_type.length + 1..-1)
       validate_header_presence!(token)
       token
     end
@@ -29,10 +29,6 @@ module MaticJWT
 
     def validate_header_presence!(token)
       raise(JWT::DecodeError, 'Authorization token is incorrect') unless token&.present?
-    end
-
-    def token_type
-      @custom_token_type || TOKEN_TYPE
     end
   end
 end
