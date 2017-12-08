@@ -9,9 +9,9 @@ module MaticJWT
       JWT.encode(payload, secret, ALGORITHM)
     end
 
-    def authentication_header_for(client_name, secret, token_type = TOKEN_TYPE)
+    def authentication_header_for(client_name, secret, scheme: SCHEME)
       token = token_for(client_name, secret)
-      "#{token_type} #{token}"
+      "#{scheme} #{token}"
     end
   end
 end

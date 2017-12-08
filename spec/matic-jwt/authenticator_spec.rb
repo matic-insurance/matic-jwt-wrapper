@@ -43,7 +43,7 @@ RSpec.describe MaticJWT::Authenticator do
     end
 
     context 'with overridden token type' do
-      let(:instance) { described_class.new(header, token_type: 'Basic') }
+      let(:instance) { described_class.new(header, scheme: 'Basic') }
       let(:header) { "Basic #{token}" }
 
       it 'works correctly' do
@@ -67,9 +67,9 @@ RSpec.describe MaticJWT::Authenticator do
       end
 
       context 'with custom token type' do
-        let(:token_type) { 'Basic' }
-        let(:instance) { described_class.new(header, token_type: token_type) }
-        let(:header) { token_generator.authentication_header_for(client_name, secret, token_type) }
+        let(:scheme) { 'Basic' }
+        let(:instance) { described_class.new(header, scheme: scheme) }
+        let(:header) { token_generator.authentication_header_for(client_name, secret, scheme: scheme) }
 
         it 'still works correctly' do
           expect { authenticate }.not_to raise_error

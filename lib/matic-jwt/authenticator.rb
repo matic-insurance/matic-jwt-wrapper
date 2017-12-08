@@ -1,7 +1,7 @@
 module MaticJWT
   class Authenticator
-    def initialize(header, token_type: TOKEN_TYPE)
-      @token_type = token_type
+    def initialize(header, scheme: SCHEME)
+      @scheme = scheme
       @token = extract_token(header)
     end
 
@@ -16,7 +16,7 @@ module MaticJWT
     private
 
     def extract_token(header)
-      token = header.slice(@token_type.length + 1..-1)
+      token = header.slice(@scheme.length + 1..-1)
       validate_header_presence!(token)
       token
     end
