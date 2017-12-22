@@ -84,5 +84,13 @@ RSpec.describe MaticJWT::Authenticator do
         expect { authenticate }.to raise_error(JWT::VerificationError, 'Signature verification raised')
       end
     end
+
+    context 'with nil header' do
+      let(:header) { nil }
+
+      it 'raises an error' do
+        expect { authenticate }.to raise_error(JWT::DecodeError, 'Authorization token is incorrect')
+      end
+    end
   end
 end

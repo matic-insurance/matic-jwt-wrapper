@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    matic-jwt (1.0.0)
+    matic-jwt (1.0.1)
       activesupport
       jwt
 
