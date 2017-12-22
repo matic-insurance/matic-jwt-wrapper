@@ -16,7 +16,7 @@ module MaticJWT
     private
 
     def extract_token(header)
-      token = header.slice(@scheme.length + 1..-1)
+      token = header&.slice(@scheme.length + 1..-1)
       validate_header_presence!(token)
       token
     end
