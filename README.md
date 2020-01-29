@@ -1,8 +1,6 @@
 # Matic::Jwt
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/matic/jwt`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Matic's implementation of JWT authentication.
 
 ## Installation
 
@@ -22,7 +20,30 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+####With Grape
+
+Use ```:jwt_auth``` strategy and provide secret.
+```ruby
+   auth :jwt_auth, {
+      secret: -> (client_name) { ::ApiClient.find_by!(name: client_name).secret }
+   }
+```
+If you need to get any data from authentication payload use ::MaticJWT::Grape::Helper.
+```ruby
+    module ApiHelper
+       include ::MaticJWT::Grape::Helper
+        
+        def current_client
+          @current_client ||= ::ApiClient.find_by!(name: client_name)
+        end
+    
+        private
+    
+        def client_name
+          auth_payload['client_name']
+        end
+    end 
+```
 
 ## Development
 
