@@ -1,3 +1,3 @@
 module MaticJWT
-  VERSION = '1.0.2'
+  VERSION = '0.0.0'.freeze
 end
