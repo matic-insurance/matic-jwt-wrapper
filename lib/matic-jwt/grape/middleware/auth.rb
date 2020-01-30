@@ -11,6 +11,7 @@ module MaticJWT
           @env = env
 
           validate_request
+          decode_payload
           authenticate!
           continue!
         end
@@ -21,17 +22,16 @@ module MaticJWT
           raise JWT::VerificationError, 'Authorization token is invalid' unless request.valid?
         end
 
+        def decode_payload
+          @env['auth_payload'] = jwt_authenticator.payload&.first
+        end
+
         def authenticate!
-          @env['auth_payload'] = authenticate_with_jwt!(secret)
+          jwt_authenticator.authenticate_with_secret!(secret)
         end
 
         def continue!
           @app.call(@env)
-        end
-
-        def authenticate_with_jwt!(secret)
-          payload = jwt_authenticator.authenticate_with_secret!(secret)
-          payload.first
         end
 
         def jwt_authenticator

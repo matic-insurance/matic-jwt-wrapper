@@ -43,6 +43,12 @@ RSpec.describe ::MaticJWT::Grape::Middleware::Auth do
           .to raise_error(JWT::VerificationError,
                           'Authorization token is invalid')
       end
+
+      describe 'env' do
+        before { safe_authenticate }
+
+        it { expect(env['auth_payload']).to be_nil }
+      end
     end
 
     context 'with different secret' do
@@ -53,6 +59,20 @@ RSpec.describe ::MaticJWT::Grape::Middleware::Auth do
           .to raise_error(JWT::VerificationError,
                           'Signature verification raised')
       end
+
+      describe 'env' do
+        before { safe_authenticate }
+
+        it 'set auth payload' do
+          expect(env['auth_payload']).to include('client_name' => client_name)
+        end
+      end
+    end
+
+    def safe_authenticate
+      authenticate
+    rescue StandardError
+      # ignored
     end
   end
 end

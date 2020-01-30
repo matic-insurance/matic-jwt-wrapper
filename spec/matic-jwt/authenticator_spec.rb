@@ -33,6 +33,17 @@ RSpec.describe MaticJWT::Authenticator do
     end
   end
 
+  describe '#payload' do
+    let(:expiration) { 100 }
+    let(:expected_payload) do
+      [{'client_name' => client_name, 'exp' => expiration}, {'alg' => 'HS256'}]
+    end
+
+    before { allow(MaticJWT::EXPIRATION).to receive(:since).and_return(expiration) }
+
+    it { expect(instance.payload).to eq expected_payload }
+  end
+
   describe '#authenticate_with_secret!' do
     subject(:authenticate) { instance.authenticate_with_secret!(decode_secret) }
 

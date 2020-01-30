@@ -13,16 +13,16 @@ module MaticJWT
       JWT.decode(@token, secret, true, algorithm: ALGORITHM)
     end
 
+    def payload
+      JWT.decode(@token, nil, false)
+    end
+
     private
 
     def extract_token(header)
       token = header&.slice(@scheme.length + 1..-1)
       validate_header_presence!(token)
       token
-    end
-
-    def payload
-      JWT.decode(@token, nil, false)
     end
 
     def validate_header_presence!(token)
