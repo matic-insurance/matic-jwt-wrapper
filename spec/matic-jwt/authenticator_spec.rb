@@ -80,7 +80,8 @@ RSpec.describe MaticJWT::Authenticator do
       context 'with custom token type' do
         let(:scheme) { 'Basic' }
         let(:instance) { described_class.new(header, scheme: scheme) }
-        let(:header) { token_generator.authentication_header_for(client_name, secret, scheme: scheme) }
+        let(:token_generator) { MaticJWT::Generator.new(scheme: scheme) }
+        let(:header) { token_generator.authentication_header_for(client_name, secret) }
 
         it 'still works correctly' do
           expect { authenticate }.not_to raise_error

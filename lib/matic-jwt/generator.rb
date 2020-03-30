@@ -1,7 +1,8 @@
 module MaticJWT
   class Generator
-    def initialize(expiration: EXPIRATION)
+    def initialize(expiration: EXPIRATION, scheme: SCHEME)
       @expiration = expiration
+      @scheme = scheme
     end
 
     def token_for(client_name, secret)
@@ -9,9 +10,9 @@ module MaticJWT
       JWT.encode(payload, secret, ALGORITHM)
     end
 
-    def authentication_header_for(client_name, secret, scheme: SCHEME)
+    def authentication_header_for(client_name, secret)
       token = token_for(client_name, secret)
-      "#{scheme} #{token}"
+      "#{@scheme} #{token}"
     end
   end
 end
