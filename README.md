@@ -20,7 +20,16 @@ Or install it yourself as:
 
 ## Usage
 
-####With Grape
+### Plain Ruby
+
+Use `MaticJWT::Generator` to create JWT tokens or headers:
+```ruby
+generator = MaticJWT::Generator.new
+token = generator.token_for('my_client', 'my_super_secret', additional_payload: 'test')
+header = generator.authentication_header_for('my_client', 'my_super_secret', user_id: 'test@localhost.com')
+```  
+
+### With Grape
 
 Use ```:jwt_auth``` strategy and provide secret.
 ```ruby
