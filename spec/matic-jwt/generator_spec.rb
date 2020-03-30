@@ -6,15 +6,19 @@ RSpec.describe MaticJWT::Generator do
   let(:secret) { 'my top secret' }
 
   describe '.token_for' do
-    subject(:token) { generator.token_for(client_name, secret) }
+    subject(:token) { generator.token_for(client_name, secret, test: 'yes') }
     subject(:payload) { JWT.decode(token, nil, false).first }
 
     it 'adds client to payload' do
-      expect(payload).to include("client_name" => client_name)
+      expect(payload).to include('client_name' => client_name)
     end
 
     it 'adds expiration to payload' do
-      expect(payload).to include("exp" => be_within(5).of(1.minute.since.to_i))
+      expect(payload).to include('exp' => be_within(5).of(1.minute.since.to_i))
+    end
+
+    it 'adds additional info to payload' do
+      expect(payload).to include('test' => 'yes')
     end
 
     it 'correctly signs request' do
@@ -23,14 +27,10 @@ RSpec.describe MaticJWT::Generator do
   end
 
   describe '.authentication_header_for' do
-    subject(:header) { generator.authentication_header_for(client_name, secret) }
+    subject(:header) { generator.authentication_header_for(client_name, secret, test: 'yes') }
 
     it 'adds scheme to output' do
       expect(header).to start_with('Bearer ')
-    end
-
-    it 'adds payload' do
-      expect(header).to include(' eyJhbGciOiJIUzI1NiJ9.')
     end
 
     it 'is verified' do
