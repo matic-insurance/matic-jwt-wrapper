@@ -5,7 +5,7 @@ require 'matic-jwt/authenticator'
 require 'matic-jwt/generator'
 require 'matic-jwt/version'
 
-if Gem::Specification.find_all_by_name('grape').present?
+if Gem.loaded_specs.has_key?('grape')
   require 'matic-jwt/grape/helper'
   require 'matic-jwt/grape/middleware/request'
   require 'matic-jwt/grape/middleware/auth'
