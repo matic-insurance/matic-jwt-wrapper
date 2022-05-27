@@ -1,26 +1,82 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
+
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+orbs:
+  ci: matic/orb-common@0.2
+  ruby: circleci/ruby@1.8.0
+
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+
+  rspec-test:
+    resource_class: small
+    parameters:
+      ruby-version:
+        type: string
     docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      - image: cimg/ruby:<< parameters.ruby-version >>
     steps:
       - checkout
+      - ruby/install-deps
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Run RSpec Tests
+          command: bundle exec rspec
+      - store_test_results:
+          path: reports/rspec
+      - store_artifacts:
+          path: reports/rspec
+      - ci/slack-stage-message
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  release:
+    parameters:
+      tag:
+        type: string
+        default: "default-tag"
+    docker:
+      - image: cimg/ruby:2.7.5
+    environment:
+      RELEASE_TAG: << parameters.tag >>
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Set up credentials
+          command: |
+              mkdir -p $HOME/.gem
+              touch $HOME/.gem/credentials
+              chmod 0600 $HOME/.gem/credentials
+              printf -- "---\n:rubygems_api_key: $RUBYGEMS_API_KEY\n" > $HOME/.gem/credentials
+      - run:
+          name: Set version
+          command: sed -i "s/[[:digit:]].[[:digit:]].[[:digit:]]/${RELEASE_TAG}/g" $(find . -name "version.rb")
+      - run:
+          name: Build gem
+          command: gem build *.gemspec
+      - run:
+          name: Push gem
+          command: gem push *.gem
+
 workflows:
-  say-hello-workflow:
+
+  matic-jwt-wrapper.build-pull-request:
+    when:
+      not:
+        equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - say-hello
+
+      - rspec-test:
+          context: global
+          matrix:
+            parameters:
+              ruby-version: [ '2.5', '2.6' ]
+
+  matic-jwt-wrapper.release:
+    jobs:
+
+      - release:
+          tag: << pipeline.git.tag >>
+          context: gem-publishing
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /\d\.\d\.\d/ # It should be [digin dot digit dot digit] format
