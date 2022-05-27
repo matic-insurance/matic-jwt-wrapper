@@ -1,0 +1,82 @@
+
+version: 2.1
+
+orbs:
+  ci: matic/orb-common@0.2
+  ruby: circleci/ruby@1.8.0
+
+jobs:
+
+  rspec-test:
+    resource_class: small
+    parameters:
+      ruby-version:
+        type: string
+    docker:
+      - image: cimg/ruby:<< parameters.ruby-version >>
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Run RSpec Tests
+          command: bundle exec rspec
+      - store_test_results:
+          path: reports/rspec
+      - store_artifacts:
+          path: reports/rspec
+      - ci/slack-stage-message
+
+  release:
+    parameters:
+      tag:
+        type: string
+        default: "default-tag"
+    docker:
+      - image: cimg/ruby:2.7.5
+    environment:
+      RELEASE_TAG: << parameters.tag >>
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Set up credentials
+          command: |
+              mkdir -p $HOME/.gem
+              touch $HOME/.gem/credentials
+              chmod 0600 $HOME/.gem/credentials
+              printf -- "---\n:rubygems_api_key: $RUBYGEMS_API_KEY\n" > $HOME/.gem/credentials
+      - run:
+          name: Set version
+          command: sed -i "s/[[:digit:]].[[:digit:]].[[:digit:]]/${RELEASE_TAG}/g" $(find . -name "version.rb")
+      - run:
+          name: Build gem
+          command: gem build *.gemspec
+      - run:
+          name: Push gem
+          command: gem push *.gem
+
+workflows:
+
+  matic-jwt-wrapper.build-pull-request:
+    when:
+      not:
+        equal: [ master, << pipeline.git.branch >> ]
+    jobs:
+
+      - rspec-test:
+          context: global
+          matrix:
+            parameters:
+              ruby-version: [ '2.5', '2.6' ]
+
+  matic-jwt-wrapper.release:
+    jobs:
+
+      - release:
+          tag: << pipeline.git.tag >>
+          context: gem-publishing
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /\d\.\d\.\d/ # It should be [digin dot digit dot digit] format
