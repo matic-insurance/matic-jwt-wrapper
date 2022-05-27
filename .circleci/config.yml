@@ -60,7 +60,7 @@ workflows:
   matic-jwt-wrapper.build-pull-request:
     when:
       not:
-        equal: [ main, << pipeline.git.branch >> ]
+        equal: [ master, << pipeline.git.branch >> ]
     jobs:
 
       - rspec-test:
