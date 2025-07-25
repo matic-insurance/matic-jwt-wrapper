@@ -27,31 +27,39 @@ Use `MaticJWT::Generator` to create JWT tokens or headers:
 generator = MaticJWT::Generator.new
 token = generator.token_for('my_client', 'my_super_secret', additional_payload: 'test')
 header = generator.authentication_header_for('my_client', 'my_super_secret', user_id: 'test@localhost.com')
-```  
+```
 
 ### With Grape
-
-Use ```:jwt_auth``` strategy and provide secret.
+Register `jwt_auth` strategy
 ```ruby
-   auth :jwt_auth, {
-      secret: -> (client_name) { ::ApiClient.find_by!(name: client_name).secret }
-   }
+  Grape::Middleware::Auth::Strategies.add(
+    :jwt_auth,
+    MaticJWT::Grape::Middleware::Auth,
+    ->(options) { [options] }
+  )
 ```
+
+Use ```:jwt_auth``` strategy and define lambda to obtain secret for by client name.
+```ruby
+   auth :jwt_auth,
+        secret: -> (client_name) { ::ApiClient.find_by!(name: client_name).secret }
+```
+
 If you need to get any data from authentication payload use ::MaticJWT::Grape::Helper.
 ```ruby
     module ApiHelper
        include ::MaticJWT::Grape::Helper
-        
+
         def current_client
           @current_client ||= ::ApiClient.find_by!(name: client_name)
         end
-    
+
         private
-    
+
         def client_name
           auth_payload['client_name']
         end
-    end 
+    end
 ```
 
 ## Development
