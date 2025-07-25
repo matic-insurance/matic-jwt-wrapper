@@ -1,9 +1,8 @@
-
 version: 2.1
 
 orbs:
-  ci: matic/orb-common@0.2
-  ruby: circleci/ruby@1.8.0
+  ci: matic/orb-common@0.3
+  ruby: circleci/ruby@2.5.3
 
 jobs:
 
@@ -15,7 +14,11 @@ jobs:
     docker:
       - image: cimg/ruby:<< parameters.ruby-version >>
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone https://${GITHUB_TOKEN}@github.com/matic-insurance/matic-jwt-wrapper.git .
+            git checkout ${CIRCLE_SHA1}
       - ruby/install-deps
       - run:
           name: Run RSpec Tests
@@ -32,11 +35,15 @@ jobs:
         type: string
         default: "default-tag"
     docker:
-      - image: cimg/ruby:2.7.5
+      - image: cimg/ruby:3.1.4
     environment:
       RELEASE_TAG: << parameters.tag >>
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone https://${GITHUB_TOKEN}@github.com/matic-insurance/matic-jwt-wrapper.git .
+            git checkout ${RELEASE_TAG}
       - ruby/install-deps
       - run:
           name: Set up credentials
@@ -67,7 +74,7 @@ workflows:
           context: global
           matrix:
             parameters:
-              ruby-version: [ '2.5', '2.6' ]
+              ruby-version: [ '3.1', '3.2' ]
 
   matic-jwt-wrapper.release:
     jobs:

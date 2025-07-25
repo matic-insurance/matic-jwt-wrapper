@@ -31,6 +31,7 @@ RSpec.describe ::MaticJWT::Grape::Middleware::Request do
     end
   end
 
+  it_behaves_like 'grape request', 'Authorization'
   it_behaves_like 'grape request', 'HTTP_AUTHORIZATION'
   it_behaves_like 'grape request', 'X-HTTP_AUTHORIZATION'
   it_behaves_like 'grape request', 'X_HTTP_AUTHORIZATION'
