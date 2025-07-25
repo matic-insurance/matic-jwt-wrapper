@@ -2,7 +2,12 @@ module MaticJWT
   module Grape
     module Middleware
       class Request
-        AUTHORIZATION_KEYS = %w[HTTP_AUTHORIZATION X-HTTP_AUTHORIZATION X_HTTP_AUTHORIZATION].freeze
+        AUTHORIZATION_KEYS = %w[
+          Authorization
+          HTTP_AUTHORIZATION
+          X-HTTP_AUTHORIZATION
+          X_HTTP_AUTHORIZATION
+        ].freeze
 
         def initialize(env)
           @env = env
