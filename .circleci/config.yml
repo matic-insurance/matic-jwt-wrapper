@@ -77,6 +77,15 @@ workflows:
         equal: [ master, << pipeline.git.branch >> ]
     jobs:
 
+      - release:
+          tag: 1.3.0
+          context: gem-publishing
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /\d\.\d\.\d/ # It should be [digin dot digit dot digit] format
+
       - rspec-test:
           context: global
           matrix:
