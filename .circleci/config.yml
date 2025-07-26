@@ -44,30 +44,29 @@ jobs:
           command: |
             git clone https://${GITHUB_TOKEN}@github.com/matic-insurance/matic-jwt-wrapper.git .
             git checkout ${RELEASE_TAG}
-      - run:
-          name: Debug credentials
-          command: |
-              echo "API key length: ${#RUBYGEMS_API_KEY}"
-              echo "Credentials file exists: $(ls -la $HOME/.gem/credentials || echo 'NOT FOUND')"
-              # Test API key works
-              curl -f -H "Authorization: $RUBYGEMS_API_KEY" https://rubygems.org/api/v1/gems.json > /dev/null && echo "API key valid" || echo "API key invalid"
       - ruby/install-deps
       - run:
           name: Set up credentials
           command: |
               mkdir -p $HOME/.gem
-              touch $HOME/.gem/credentials
+              echo ":rubygems_api_key: ${RUBYGEMS_API_KEY}" >> ~/.gem/credentials
               chmod 0600 $HOME/.gem/credentials
-              printf -- "---\n:rubygems_api_key: $RUBYGEMS_API_KEY\n" > $HOME/.gem/credentials
+      - run:
+          name: Debug credentials
+          command: |
+              echo "API key length: ${#RUBYGEMS_API_KEY}"
+              echo "Credentials file exists: $(ls -la $HOME/.gem/credentials || echo 'NOT FOUND')"
+              echo "Testing API key with current gem..."
+              curl -f -H "Authorization: $RUBYGEMS_API_KEY" https://rubygems.org/api/v1/gems/matic-jwt-wrapper.json && echo "API key can access gem" || echo "API key cannot access gem"
       - run:
           name: Set version
           command: sed -i "s/[[:digit:]].[[:digit:]].[[:digit:]]/${RELEASE_TAG}/g" $(find . -name "version.rb")
       - run:
           name: Build gem
-          command: bundle exec gem build *.gemspec
+          command: gem build *.gemspec
       - run:
           name: Push gem
-          command: bundle exec gem push *.gem
+          command: gem push *.gem
 
 workflows:
 
@@ -77,11 +76,10 @@ workflows:
         equal: [ master, << pipeline.git.branch >> ]
     jobs:
 
-      - rspec-test:
-          context: global
-          matrix:
-            parameters:
-              ruby-version: [ '3.1', '3.2' ]
+      - release:
+          tag: "1.3.0"
+          context: gem-publishing
+
 
   matic-jwt-wrapper.release:
     jobs:
