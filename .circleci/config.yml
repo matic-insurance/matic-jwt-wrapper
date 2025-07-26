@@ -44,6 +44,13 @@ jobs:
           command: |
             git clone https://${GITHUB_TOKEN}@github.com/matic-insurance/matic-jwt-wrapper.git .
             git checkout ${RELEASE_TAG}
+      - run:
+          name: Debug credentials
+          command: |
+              echo "API key length: ${#RUBYGEMS_API_KEY}"
+              echo "Credentials file exists: $(ls -la $HOME/.gem/credentials || echo 'NOT FOUND')"
+              # Test API key works
+              curl -f -H "Authorization: $RUBYGEMS_API_KEY" https://rubygems.org/api/v1/gems.json > /dev/null && echo "API key valid" || echo "API key invalid"
       - ruby/install-deps
       - run:
           name: Set up credentials
@@ -57,10 +64,10 @@ jobs:
           command: sed -i "s/[[:digit:]].[[:digit:]].[[:digit:]]/${RELEASE_TAG}/g" $(find . -name "version.rb")
       - run:
           name: Build gem
-          command: gem build *.gemspec
+          command: bundle exec gem build *.gemspec
       - run:
           name: Push gem
-          command: gem push *.gem
+          command: bundle exec gem push *.gem
 
 workflows:
 
