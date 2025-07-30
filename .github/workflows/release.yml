@@ -17,17 +17,14 @@ jobs:
         with:
           ruby-version: 3.1
           bundler-cache: true
-      - name: Get version from release tag
-        run: VERSION="${{ github.event.release.tag_name }}"
-      - name: Check if version matches x.y.z format (3 digits separated by dots)
+      - name: Set version from release tag
         run: |
+          VERSION="${{ github.event.release.tag_name }}"
           if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "❌ ERROR: Version '$VERSION' is not in valid x.y.z format"
             echo "Expected format: 1.2.3 (three numbers separated by dots)"
             exit 1
           fi
-      - name: Set version in version.rb
-        run: |
           echo "Setting version to: $VERSION"
           find . -name "version.rb" -exec sed -i "s|VERSION = ['\"][^'\"]*['\"]|VERSION = \"$VERSION\"|g" {} \;
       - name: Configure RubyGems Credentials
