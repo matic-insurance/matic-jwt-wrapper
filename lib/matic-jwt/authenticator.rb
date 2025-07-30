@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MaticJWT
   class Authenticator
     def initialize(header, scheme: SCHEME)
@@ -20,7 +22,7 @@ module MaticJWT
     private
 
     def extract_token(header)
-      token = header&.slice(@scheme.length + 1..-1)
+      token = header&.slice((@scheme.length + 1)..-1)
       validate_header_presence!(token)
       token
     end

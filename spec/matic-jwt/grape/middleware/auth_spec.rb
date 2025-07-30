@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Grape
   module Middleware
     module Auth
@@ -12,7 +14,7 @@ require 'spec_helper'
 require 'matic-jwt/grape/middleware/auth'
 require 'matic-jwt/grape/middleware/request'
 
-RSpec.describe ::MaticJWT::Grape::Middleware::Auth do
+RSpec.describe MaticJWT::Grape::Middleware::Auth do
   let(:instance) { described_class.new(app, options) }
 
   describe '#call' do

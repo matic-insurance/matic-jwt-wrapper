@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'matic-jwt/grape/helper'
 
@@ -5,7 +7,7 @@ class TestClass
   include ::MaticJWT::Grape::Helper
 end
 
-RSpec.describe ::MaticJWT::Grape::Helper do
+RSpec.describe MaticJWT::Grape::Helper do
   subject(:instance) { TestClass.new }
 
   describe '#auth_payload' do
