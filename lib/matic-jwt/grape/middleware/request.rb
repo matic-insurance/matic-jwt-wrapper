@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MaticJWT
   module Grape
     module Middleware
@@ -24,7 +26,7 @@ module MaticJWT
         private
 
         def auth_key
-          @authorization_key ||= AUTHORIZATION_KEYS.detect { |key| @env.key?(key) }
+          @auth_key ||= AUTHORIZATION_KEYS.detect { |key| @env.key?(key) }
         end
       end
     end

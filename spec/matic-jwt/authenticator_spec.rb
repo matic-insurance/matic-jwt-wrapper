@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe MaticJWT::Authenticator do
@@ -36,7 +38,7 @@ RSpec.describe MaticJWT::Authenticator do
   describe '#payload' do
     let(:expiration) { 100 }
     let(:expected_payload) do
-      [{'client_name' => client_name, 'exp' => expiration}, {'alg' => 'HS256'}]
+      [{ 'client_name' => client_name, 'exp' => expiration }, { 'alg' => 'HS256' }]
     end
 
     before { allow(MaticJWT::EXPIRATION).to receive(:since).and_return(expiration) }

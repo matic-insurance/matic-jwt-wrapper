@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MaticJWT
   class Generator
     def initialize(expiration: EXPIRATION, scheme: SCHEME)

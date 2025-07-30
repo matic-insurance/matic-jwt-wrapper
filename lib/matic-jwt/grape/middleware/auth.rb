@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MaticJWT
   module Grape
     module Middleware
@@ -50,4 +52,4 @@ module MaticJWT
   end
 end
 
-Grape::Middleware::Auth::Strategies.add(:jwt_auth, ::MaticJWT::Grape::Middleware::Auth, ->(options) { [options] })
+Grape::Middleware::Auth::Strategies.add(:jwt_auth, MaticJWT::Grape::Middleware::Auth, ->(options) { [options] })
