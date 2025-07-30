@@ -27,6 +27,7 @@ jobs:
             exit 1
           fi
       - name: Set version in version.rb
+        run: |
           echo "Setting version to: $VERSION"
           find . -name "version.rb" -exec sed -i "s|VERSION = ['\"][^'\"]*['\"]|VERSION = \"$VERSION\"|g" {} \;
       - name: Configure RubyGems Credentials
