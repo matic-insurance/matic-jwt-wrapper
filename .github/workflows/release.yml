@@ -1,0 +1,37 @@
+name: Release to RubyGems
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler-cache: true
+      - name: Get version from release tag
+        run: VERSION="${{ github.event.release.tag_name }}"
+      - name: Check if version matches x.y.z format (3 digits separated by dots)
+        run: |
+          if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ ERROR: Version '$VERSION' is not in valid x.y.z format"
+            echo "Expected format: 1.2.3 (three numbers separated by dots)"
+            exit 1
+          fi
+      - name: Set version in version.rb
+          echo "Setting version to: $VERSION"
+          find . -name "version.rb" -exec sed -i "s|VERSION = ['\"][^'\"]*['\"]|VERSION = \"$VERSION\"|g" {} \;
+      - name: Configure RubyGems Credentials
+        uses: rubygems/configure-rubygems-credentials@main
+      - name: Build Gem
+        run: gem build *.gemspec
+      - name: Push gem
+        run: gem push *.gem
